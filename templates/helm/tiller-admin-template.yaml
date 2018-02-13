@@ -1,0 +1,93 @@
+kind: Template
+apiVersion: v1
+objects:
+- kind: ServiceAccount
+  apiVersion: v1
+  metadata:
+    name: tiller-admin
+
+- kind: ClusterRole
+  metadata:
+    annotations:
+      authorization.openshift.io/system-only: "true"
+      openshift.io/description: The tiller-admin super-user role that can perform any action in the cluster.
+        When granted to a user or sa (tiller) within a project, they have full control over quota and
+        membership and can perform every action on every resource in the project.
+      openshift.io/reconcile-protect: "false"
+    creationTimestamp: null
+    name: tiller-admin
+  rules:
+  - apiGroups:
+    - '*'
+    attributeRestrictions: null
+    resources:
+    - '*'
+    verbs:
+    - '*'
+  - apiGroups: null
+    attributeRestrictions: null
+    nonResourceURLs:
+    - '*'
+    resources: []
+    verbs:
+    - '*'
+
+- kind: ClusterRoleBinding
+  metadata:
+    annotations:
+      openshift.io/reconcile-protect: "false"
+    creationTimestamp: null
+    labels:
+      kubernetes.io/bootstrapping: rbac-defaults
+    name: tiller-admin
+  roleRef:
+    name: tiller-admin
+  subjects:
+  - kind: ServiceAccount
+    name: tiller-admin
+    namespace: ${TILLER_NAMESPACE}
+
+- apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    name: tiller
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: helm
+        name: tiller
+    template:
+      metadata:
+        labels:
+          app: helm
+          name: tiller
+      spec:
+        containers:
+        - name: tiller
+          image: gcr.io/kubernetes-helm/tiller:${HELM_VERSION}
+          env:
+          - name: TILLER_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          ports:
+          - name: tiller
+            containerPort: 44134
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 44135
+          livenessProbe:
+            httpGet:
+              path: /liveness
+              port: 44135
+        serviceAccountName: tiller-admin
+
+parameters:
+- name: HELM_VERSION
+  value: v2.8.1
+  required: true
+- name: TILLER_NAMESPACE
+  value: 'kube-system'
+  required: true
