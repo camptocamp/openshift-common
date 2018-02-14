@@ -7,6 +7,7 @@ objects:
     name: tiller-admin
 
 - kind: ClusterRole
+  apiVersion: v1
   metadata:
     annotations:
       authorization.openshift.io/system-only: "true"
@@ -33,6 +34,7 @@ objects:
     - '*'
 
 - kind: ClusterRoleBinding
+  apiVersion: v1
   metadata:
     annotations:
       openshift.io/reconcile-protect: "false"

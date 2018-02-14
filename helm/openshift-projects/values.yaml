@@ -1,0 +1,69 @@
+# Default values for openshift-projects.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+name: dt-ftth
+
+projects:
+  dt-ftth-cicd:
+    description: |-
+      Deutsche Telekom - Fiber to the Home
+      Continuous integration and deployement project
+    tiller: true
+  dt-ftth-dev:
+    description: |-
+      Deutsche Telekom Fiber to the Home
+      Developement project
+    tiller: true
+  dt-ftth-int:
+    description: |-
+      Deutsche Telekom Fiber to the Home
+      Integration project
+    tiller: true
+  dt-ftth-prd:
+    description: |-
+      Deutsche Telekom Fiber to the Home
+      Production project
+    tiller: true
+
+tiller:
+  image: gcr.io/kubernetes-helm/tiller
+  tag: v2.8.1
+
+defaultRoleBindings:
+  system:deployers:
+    roleRef:
+      name: system:deployer
+    subjects:
+      kind: ServiceAccount
+      name: deployer
+  system:image-builders:
+    roleRef:
+      name: system:image-builder
+    subjects:
+      kind: ServiceAccount
+      name: builder
+  system:image-pullers:
+    roleRef:
+      name: system:image-puller
+    subjects:
+      kind: SystemGroup
+      name: system:serviceaccounts
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
