@@ -2,8 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-name: dt-ftth
-
 projects:
   dt-ftth-cicd:
     description: |-
@@ -29,26 +27,6 @@ projects:
 tiller:
   image: gcr.io/kubernetes-helm/tiller
   tag: v2.8.1
-
-defaultRoleBindings:
-  system:deployers:
-    roleRef:
-      name: system:deployer
-    subjects:
-      kind: ServiceAccount
-      name: deployer
-  system:image-builders:
-    roleRef:
-      name: system:image-builder
-    subjects:
-      kind: ServiceAccount
-      name: builder
-  system:image-pullers:
-    roleRef:
-      name: system:image-puller
-    subjects:
-      kind: SystemGroup
-      name: system:serviceaccounts
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
